@@ -1,0 +1,29 @@
+{
+    "name": "talk-fusion-enrollment",
+    "version": "1.0.0",
+    "description": "Talk Fusion Enrollment System",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "concurrently \"node scripts/port-handler.js\" \"nodemon server.js\"",
+        "client": "cd client && npm run dev",
+        "dev:full": "concurrently \"npm run dev\" \"npm run client\""
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.0.3",
+        "express": "^4.18.2",
+        "jsonwebtoken": "^9.0.0",
+        "mongoose": "^7.0.3",
+        "validator": "^13.9.0"
+    },
+    "devDependencies": {
+        "@tailwindcss/vite": "^4.0.15",
+        "autoprefixer": "^10.4.21",
+        "concurrently": "^8.0.1",
+        "nodemon": "^2.0.22",
+        "postcss": "^8.5.3",
+        "tailwindcss": "^4.0.15"
+    }
+}
