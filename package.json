@@ -5,9 +5,9 @@
     "main": "server.js",
     "scripts": {
         "start": "node server.js",
-        "dev": "concurrently \"node scripts/port-handler.js\" \"nodemon server.js\"",
+        "server": "nodemon server.js",
         "client": "cd client && npm run dev",
-        "dev:full": "concurrently \"npm run dev\" \"npm run client\""
+        "dev": "concurrently \"npm run server\" \"npm run client\""
     },
     "dependencies": {
         "bcryptjs": "^2.4.3",

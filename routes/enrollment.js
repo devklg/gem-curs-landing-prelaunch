@@ -1,56 +1,50 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 
 // Pre-enroll a new user
 router.post('/pre-enroll', async (req, res) => {
     try {
-        const { name, email, enrollerId } = req.body;
+        const { firstName, lastName, email, sponsorName } = req.body;
 
-        // Check if user already exists
-        let user = await User.findOne({ email });
-        if (user) {
-            return res.status(400).json({ message: 'User already exists' });
+        // Check for existing user
+        const existingUser = await User.findOne({ email: email.toLowerCase() });
+        if (existingUser) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email already registered'
+            });
         }
 
-        // Generate a random password and hash it
+        // Generate userId and temp password
+        const userId = 'TF' + Date.now().toString().slice(-6);
         const tempPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(tempPassword, 10);
 
-        // Create new user
-        user = new User({
-            name,
-            email,
+        const newUser = new User({
+            firstName,
+            lastName,
+            email: email.toLowerCase(),
             password: hashedPassword,
-            enrollerId,
-            rank: 'Member'
+            userId,
+            sponsorName
         });
 
-        // Determine placement leg
-        if (enrollerId) {
-            const enroller = await User.findById(enrollerId);
-            if (enroller) {
-                // Simple placement logic - alternate between legs
-                user.placementLeg = enroller.leftLeg.length <= enroller.rightLeg.length ? 'left' : 'right';
-            }
-        }
-
-        await user.save();
+        await newUser.save();
 
         res.status(201).json({
+            success: true,
             message: 'Pre-enrollment successful',
-            user: {
-                id: user._id,
-                name: user.name,
-                email: user.email,
-                rank: user.rank,
-                placementLeg: user.placementLeg
-            }
+            data: { userId, tempPassword }
         });
+
     } catch (error) {
         console.error('Pre-enrollment error:', error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 });
 
